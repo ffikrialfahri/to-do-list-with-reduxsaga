@@ -43,4 +43,5 @@ Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
 ## Screenshot Aplikasi
 
-<!-- Tempatkan screenshot aplikasi yang sedang berjalan di sini -->
+![alt text](image.png)
+![alt text](image-1.png)
