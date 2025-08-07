@@ -1,32 +1,32 @@
-import React, { useState } from 'react';
+// src/components/TodoList.jsx
+
+import React from 'react';
 import { useSelector } from 'react-redux';
 import TodoItem from './TodoItem';
-import TodoForm from './TodoForm';
 
-function TodoList() {
+function TodoList({ setEditingTask, setIsModalOpen }) {
   const tasks = useSelector((state) => state.todos.tasks);
-  const { status, category, keyword } = useSelector((state) => state.filter);
-  const [editingTask, setEditingTask] = useState(null);
+  const { status, category } = useSelector((state) => state.filter);
 
   const filteredTasks = tasks.filter((task) => {
     const matchesStatus = status === 'All' ||
       (status === 'Active' && !task.completed) ||
       (status === 'Completed' && task.completed);
-
     const matchesCategory = category === 'All' || task.category === category;
-
-    const matchesKeyword = task.text.toLowerCase().includes(keyword.toLowerCase());
-
-    return matchesStatus && matchesCategory && matchesKeyword;
+    return matchesStatus && matchesCategory;
   });
 
   return (
     <div className="todo-list-container">
-      <TodoForm currentTask={editingTask} setEditingTask={setEditingTask} />
-      <ul className="todo-list">
-        {filteredTasks.map((task) => (
-          <TodoItem key={task.id} task={task} setEditingTask={setEditingTask} />
-        ))}
+      {/* Daftar tugas */}
+      <ul className="list-none p-0 mt-6 space-y-2">
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task) => (
+            <TodoItem key={task.id} task={task} setEditingTask={setEditingTask} setIsModalOpen={setIsModalOpen} />
+          ))
+        ) : (
+          <p className="text-center text-slate-500 py-4">Tidak ada tugas yang cocok.</p>
+        )}
       </ul>
     </div>
   );

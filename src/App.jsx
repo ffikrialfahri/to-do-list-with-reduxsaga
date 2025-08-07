@@ -1,72 +1,75 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchInitialData } from './redux/actions/dataActions';
+import Sidebar from './components/Sidebar';
+import CalendarView from './components/CalendarView';
 import TodoList from './components/TodoList';
 import FilterControls from './components/FilterControls';
+import Modal from './components/Modal';
+import TodoForm from './components/TodoForm';
+import { Plus } from 'lucide-react';
 import './App.css';
 
 function App() {
   const dispatch = useDispatch();
   const { loading, locationData, weatherData, error } = useSelector((state) => state.data);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   useEffect(() => {
     dispatch(fetchInitialData());
   }, [dispatch]);
 
-  const renderGreeting = () => {
-    if (!locationData || !locationData.city) return '';
-
-    const currentHour = new Date().getHours();
-    let greeting = '';
-
-    if (currentHour >= 5 && currentHour < 12) {
-      greeting = 'Pagi';
-    } else if (currentHour >= 12 && currentHour < 18) {
-      greeting = 'Siang';
-    } else if (currentHour >= 18 && currentHour < 24) {
-      greeting = 'Malam';
-    } else {
-      greeting = 'Dini Hari';
-    }
-
-    return `Selamat ${greeting}, ${locationData.city}`;
+  const renderWeather = () => {
+    if (!weatherData || !weatherData.current_weather) return 'Memuat cuaca...';
+    const { temperature } = weatherData.current_weather;
+    return `${temperature}°C`;
   };
 
-  const renderWeather = () => {
-    if (!weatherData || !weatherData.current_weather) return '';
+  const getGreeting = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) return 'Selamat Pagi';
+    if (currentHour < 18) return 'Selamat Siang';
+    return 'Selamat Malam';
+  };
 
-    const { temperature, weathercode } = weatherData.current_weather;
-    let weatherDescription = '';
-    // Simplified weather code mapping for demonstration
-    if (weathercode === 0) weatherDescription = 'Cerah';
-    else if (weathercode > 0 && weathercode < 3) weatherDescription = 'Sebagian Berawan';
-    else if (weathercode >= 3 && weathercode < 50) weatherDescription = 'Berawan';
-    else if (weathercode >= 50 && weathercode < 60) weatherDescription = 'Gerimis';
-    else if (weathercode >= 60 && weathercode < 70) weatherDescription = 'Hujan';
-    else if (weathercode >= 70 && weathercode < 80) weatherDescription = 'Salju';
-    else if (weathercode >= 80 && weathercode < 90) weatherDescription = 'Badai';
-    else weatherDescription = 'Tidak Diketahui';
-
-    return `${weatherDescription}, ${temperature}°C`;
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingTask(null); // Reset editing task when modal closes
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        {loading && <p>Memuat data...</p>}
-        {error && <p>Error: {error}</p>}
-        {!loading && !error && locationData && weatherData && (
-          <div className="header-info">
-            <h1>{renderGreeting()}</h1>
-            <p>{renderWeather()}</p>
+    <div className="flex h-screen bg-slate-50 font-sans">
+      {/* SECTION 1: SIDEBAR */}
+      <Sidebar />
+
+      {/* SECTION 2: MAIN CONTENT (TO-DO LIST) */}
+      <main className="flex-1 p-6 overflow-y-auto">
+        {/* Header Section */}
+        <header className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">
+              {loading ? 'Memuat...' : `${getGreeting()}, ${locationData?.city || 'Pengguna'}`}
+            </h1>
+            <p className="text-slate-500">{loading ? '...' : renderWeather()}</p>
           </div>
-        )}
-      </header>
-      <main>
-        <h2>Daftar Tugas</h2>
-        <FilterControls />
-        <TodoList />
+          
+        </header>
+
+        {/* Filter and To-Do List */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+          <FilterControls setIsModalOpen={setIsModalOpen} setEditingTask={setEditingTask} />
+          <TodoList setEditingTask={setEditingTask} setIsModalOpen={setIsModalOpen} />
+        </div>
       </main>
+
+      {/* SECTION 3: CALENDAR VIEW */}
+      <CalendarView />
+
+      {/* Modal for Add/Edit Task */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingTask ? 'Edit Tugas' : 'Tambah Tugas Baru'}>
+        <TodoForm currentTask={editingTask} setEditingTask={setEditingTask} onClose={handleCloseModal} />
+      </Modal>
     </div>
   );
 }
