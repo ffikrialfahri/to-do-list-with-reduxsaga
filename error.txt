@@ -1,2 +1,0 @@
-[plugin:vite:react-babel] C:\Users\Lenovo\javaScript\to-do-list-with-reduxsaga\src\components\TodoList.jsx: 'import' and 'export' may only appear at the top level. (17:4)
-  20 |

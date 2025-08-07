@@ -6,14 +6,16 @@ import TodoItem from './TodoItem';
 
 function TodoList({ setEditingTask, setIsModalOpen }) {
   const tasks = useSelector((state) => state.todos.tasks);
-  const { status, category } = useSelector((state) => state.filter);
+  const { status, category, keyword } = useSelector((state) => state.filter);
 
   const filteredTasks = tasks.filter((task) => {
     const matchesStatus = status === 'All' ||
       (status === 'Active' && !task.completed) ||
       (status === 'Completed' && task.completed);
     const matchesCategory = category === 'All' || task.category === category;
-    return matchesStatus && matchesCategory;
+    const matchesKeyword = task.title.toLowerCase().includes(keyword.toLowerCase()) ||
+                           task.description.toLowerCase().includes(keyword.toLowerCase());
+    return matchesStatus && matchesCategory && matchesKeyword;
   });
 
   return (

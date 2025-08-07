@@ -6,17 +6,20 @@ function TodoForm({ currentTask, setEditingTask, onClose }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Pribadi');
+  const [dueDate, setDueDate] = useState(''); // New state for due date
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (currentTask) {
       setTitle(currentTask.title);
-      setDescription(currentTask.description || ''); // Handle existing tasks without description
+      setDescription(currentTask.description || '');
       setCategory(currentTask.category);
+      setDueDate(currentTask.dueDate || ''); // Set due date for editing
     } else {
       setTitle('');
       setDescription('');
       setCategory('Pribadi');
+      setDueDate('');
     }
   }, [currentTask]);
 
@@ -25,7 +28,7 @@ function TodoForm({ currentTask, setEditingTask, onClose }) {
     if (!title.trim()) return; // Title is required
 
     if (currentTask) {
-      dispatch(editTask({ ...currentTask, title, description, category }));
+      dispatch(editTask({ ...currentTask, title, description, category, dueDate }));
       if (setEditingTask) setEditingTask(null);
     } else {
       const newTask = {
@@ -34,12 +37,14 @@ function TodoForm({ currentTask, setEditingTask, onClose }) {
         description,
         completed: false,
         category,
+        dueDate, // Include due date in new task
       };
       dispatch(addTask(newTask));
     }
     setTitle('');
     setDescription('');
     setCategory('Pribadi');
+    setDueDate('');
     if (onClose) onClose();
   };
 
@@ -58,6 +63,12 @@ function TodoForm({ currentTask, setEditingTask, onClose }) {
         onChange={(e) => setDescription(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 outline-none h-24 resize-y"
       ></textarea>
+      <input
+        type="date"
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+      />
       <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 outline-none">
         <option value="Pribadi">Pribadi</option>
         <option value="Pekerjaan">Pekerjaan</option>

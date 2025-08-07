@@ -12,3 +12,4 @@ export const TOGGLE_TASK_STATUS = 'TOGGLE_TASK_STATUS';
 // Action Types for Filtering
 export const SET_FILTER_STATUS = 'SET_FILTER_STATUS';
 export const SET_FILTER_CATEGORY = 'SET_FILTER_CATEGORY';
+export const SET_SEARCH_KEYWORD = 'SET_SEARCH_KEYWORD';

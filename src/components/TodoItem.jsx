@@ -33,6 +33,7 @@ function TodoItem({ task, setEditingTask, setIsModalOpen }) {
         {/* Menggunakan task.title dan task.description sesuai kode Anda */}
         <p className={`text-slate-800 font-semibold ${task.completed ? 'line-through' : ''}`}>{task.title}</p>
         {task.description && <p className={`text-slate-600 text-sm ${task.completed ? 'line-through' : ''}`}>{task.description}</p>}
+        {task.dueDate && <p className="text-slate-500 text-xs mt-1">Jatuh Tempo: {new Date(task.dueDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>}
         <span className={`text-xs font-medium px-2 py-0.5 mt-1 inline-block rounded-full ${categoryColors[task.category] || 'bg-slate-100 text-slate-800'}`}>
           {task.category}
         </span>
